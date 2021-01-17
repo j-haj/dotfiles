@@ -1,28 +1,24 @@
-" Turn off vi compatibility
+" Don't try to be vi compatible
 set nocompatible
 
-" Load plugins Vundle plugins here
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'Valloric/YouCompleteMe'
-call vundle#end()
+" Helps force plugins to load correctly when it is turned back on below
+filetype off
 
-
-" Pathogen
-execute pathogen#infect()
+" TODO: Load plugins here (pathogen or vundle)
 
 " Turn on syntax highlighting
 syntax on
-
-" Set background color
-set background=dark
-
-" Set colorscheme
-colorscheme seagull
+set autoindent
+set smartindent
 
 " For plugins to load correctly
 filetype plugin indent on
+
+" TODO: Pick a leader key
+" let mapleader = ","
+
+" Security
+set modelines=0
 
 " Show line numbers
 set number
@@ -30,55 +26,78 @@ set number
 " Show file stats
 set ruler
 
-" Show cmd in bottom bar
+" Blink cursor on error instead of beeping (grr)
+set visualbell
+
+" Encoding
+set encoding=utf-8
+
+
+call plug#begin('~/.vim/plugged')
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'sainnhe/edge'
+Plug 'gilgigilgil/anderson.vim'
+Plug 'morhetz/gruvbox'
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'rust-lang/rust.vim'
+Plug 'scrooloose/syntastic'
+Plug 'vim-airline/vim-airline'
+call plug#end()
+
+let g:airline#extensions#tabline#enabled = 1
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_cpp_compiler = 'clang++'
+let g:syntastic_cpp_compiler_options = ' -std=c++14 -stdlib=libc++'
+
+colorscheme gruvbox
+
+" Rendering
+set ttyfast
+
+" Status bar
+set laststatus=2
+
+" Last line
+set showmode
 set showcmd
 
-" Show cursorline
-set cursorline
-
-" Load filetype-specific indent files
-filetype indent on
-
-" Visual autocomplete for command menu
-set wildmenu
-
-" Redraw only when needed
-set lazyredraw
-
-" Highlight matching [{()}]
-
-" Searching
-set incsearch 	" search as characters are entered
-set hlsearch 	" highlight matches
-
-" Backups
-set backup
-set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
-set backupskip=/tmp/*,/private/tmp/*
-set directory=~/.vim-tmp,~/tmp,/var/tmp,/tmpset 
-set writebackup
-
-" Whitespace
-set wrap
-set textwidth=80
 set tabstop=2
 set shiftwidth=2
 set softtabstop=2
 set expandtab
 set noshiftround
 
-" NERDTree customization
-autocmd vimenter * NERDTree " Automatically start NERDTree when vim startsup
-autocmd vimenter * TagbarToggle " Start Tagbar on startup
+" Searching
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+set showmatch
 
-" Set Python spacing to 4 spaces
-autocmd Filetype python setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
+set t_Co=256
+set background=dark
 
-" Set Go spacing to tabs with width 8
-autocmd Filetype go setlocal noexpandtab tabstop=8 shiftwidth=8 softtabstop=8
+" Enable ripgrep for file searching
+if executable('rg')
+  " Use rg over grep
+  set grepprg=rg\ --nogroup\ --nocolor
 
-" Turn off expand tab for make
-autocmd Filetype make setlocal noexpandtab tabstop=4 shiftwidth=4 softtabstop=4
+  " Use rg in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'rg %s -l --nocolor -g ""'
 
-" Linux Kernel formatting
-command KernelFmt setlocal noexpandtab tabstop=8 shiftwidth=8 softtabstop=8
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+endif
+
+nnoremap <silent> <C-f> :Files<Cr>
+nnoremap <silent> <Leader>f :Rg<Cr>
+autocmd BufWritePre * :%s/\s\+$//e

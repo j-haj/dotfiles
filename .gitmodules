@@ -1,0 +1,3 @@
+[submodule ".vim/plugged/anderson.vim"]
+	path = .vim/plugged/anderson.vim
+	url = https://github.com/tlhr/anderson.vim
