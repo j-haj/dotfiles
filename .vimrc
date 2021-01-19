@@ -1,5 +1,6 @@
 " Don't try to be vi compatible
 set nocompatible
+set backspace=indent,eol,start
 
 " Helps force plugins to load correctly when it is turned back on below
 filetype off
